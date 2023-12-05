@@ -58,8 +58,11 @@ class ItemDetailsViewModel(
             val currentItem = uiState.value.itemDetails.toItem()
             if (currentItem.quantity > 0) {
                 itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity - 1))
-            }
+           }
         }
+    }
+    suspend fun deleteItem() {
+        itemsRepository.deleteItem(uiState.value.itemDetails.toItem())
     }
 
 }

@@ -57,12 +57,14 @@ import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 object ItemDetailsDestination : NavigationDestination {
     override val route = "item_details"
@@ -80,6 +82,7 @@ fun ItemDetailsScreen(
     viewModel: ItemDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
+    val coroutineScope = rememberCoroutineScope()
     val uiState = viewModel.uiState.collectAsState()
     Scaffold(
         topBar = {
@@ -105,7 +108,10 @@ fun ItemDetailsScreen(
         ItemDetailsBody(
             itemDetailsUiState = uiState.value,
             onSellItem = {viewModel.reduceQuantityByOne()},
-            onDelete = { },
+            onDelete = { coroutineScope.launch {
+                viewModel.deleteItem()
+                navigateBack()
+            } },
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
